@@ -58,6 +58,7 @@ try:
 except:
     import scipy_base as numpy
 
+
 def elementWiseLog(mat):
     """ Take log of each element+1 in matrix, the +1
     keeps 0 from being a problem.
@@ -91,8 +92,8 @@ def fileMat(fileName, S=None):
         f = open(fileName, 'w')
         for row in S:
             for el in row:
-                print >>f, el,
-            print >>f
+                print(el, file=f)
+            print("", file=f)
         f.close()
     else:
         f = open(fileName, 'r')
@@ -101,27 +102,34 @@ def fileMat(fileName, S=None):
             S.append( [float(i) for i in row.split(" ")] )
         return numpy.array(S)
 
+
 def plotMatrix(o_mat, **kwargs):
     """ DOC STRING
     """
     kwargs['interpolation']='nearest'
-    origin = kwargs.get('origin',1); kwargs['origin']='lower'
+    origin = kwargs.get('origin',1)
+    kwargs['origin']='lower'
     showColorBar = kwargs.get('showColorBar',False)
-    if kwargs.has_key("showColorBar"): kwargs.pop("showColorBar")
-    logColors    = kwargs.get('logColors',False)
-    if kwargs.has_key("logColors"):    kwargs.pop("logColors")
-    ifShow       = kwargs.get('show',False)
-    if kwargs.has_key("show"):         kwargs.pop("show")
-    fileName     = kwargs.get('fileName',None)
-    if kwargs.has_key("fileName"):     kwargs.pop("fileName")
+    if "showColorBar" in kwargs:
+        kwargs.pop("showColorBar")
+    logColors = kwargs.get('logColors',False)
+    if "logColors" in kwargs:
+        kwargs.pop("logColors")
+    ifShow = kwargs.get('show',False)
+    if "show" in kwargs:
+        kwargs.pop("show")
+    fileName = kwargs.get('fileName',None)
+    if "fileName" in kwargs:
+        kwargs.pop("fileName")
 
     mat = o_mat.copy() # don't modify original matrix
-    if logColors: mat = elementWiseLog(mat)
+    if logColors:
+        mat = elementWiseLog(mat)
 
-    if not kwargs.has_key("vmax"):
+    if "vmax" not in kwargs:
         kwargs['vmax'] = float(mat[origin:,origin:].max())
 
-    ax = pylab.axes()#[.05,.05,.9,.9])
+    ax = pylab.axes() # [.05,.05,.9,.9])
     ax.xaxis.tick_top()
     H = pylab.imshow( mat, **kwargs)
     pylab.axis('tight')
@@ -133,16 +141,19 @@ def plotMatrix(o_mat, **kwargs):
     if fileName != None:
         pylab.savefig(fileName)
 
-    if ifShow: pylab.show()
-    else: pylab.draw_if_interactive()
+    if ifShow:
+        pylab.show()
+    else:
+        pylab.draw_if_interactive()
 
     return H
+
 
 def portrait(G):
     """ return matrix where M[i][j] is the number of starting nodes in G
     with j nodes in shell i.
     """
-    dia = 500 #networkx.diameter(G)
+    dia = 500 # networkx.diameter(G)
     N = G.number_of_nodes()
     # B indices are 0...dia x 0...N-1:
     B = zeros( (dia+1,N) )
@@ -191,7 +202,7 @@ def portrait(G):
 
 if __name__ == '__main__':
     try:
-        G = networkx.read_edgelist(sys.argv[1]) #, delimiter="\t")
+        G = networkx.read_edgelist(sys.argv[1]) #,delimiter="\t")
     except:
         G = networkx.grid_2d_graph(20,20)
 
@@ -201,9 +212,9 @@ if __name__ == '__main__':
         import pylab
         plotMatrix(B, origin=1, logColors=True, show=True)
     except ImportError:
-        print "pylab failed, no plotting"
+        print("pylab failed, no plotting")
     try:
-        print "writing matrix to file...", sys.argv[2]
+        print("writing matrix to file...", sys.argv[2])
         fileMat(sys.argv[2], B)
     except:
         pass
