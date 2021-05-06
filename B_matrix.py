@@ -153,11 +153,11 @@ def portrait(G):
         nodes_visited = {starting_node:0}
         search_queue = [starting_node]
         d = 1
-        while len(search_queue) > 0:
+        while search_queue:
             next_depth = []
             extend = next_depth.extend
             for n in search_queue:
-                l = [ i for i in adj[n].iterkeys() if i not in nodes_visited ]
+                l = [i for i in adj[n] if i not in nodes_visited]
                 extend(l)
                 for j in l: # faster way?
                     nodes_visited[j] = d
@@ -176,7 +176,7 @@ def portrait(G):
         for d in node_distances:
             dict_distribution[d] += 1
         # add individual distribution to matrix:
-        for shell,count in dict_distribution.iteritems():
+        for shell,count in dict_distribution.items():
             B[shell][count] += 1
 
         # HACK: count starting nodes that have zero nodes in farther shells
@@ -186,6 +186,7 @@ def portrait(G):
             max_shell -= 1
 
     return B[:max_path+1,:]
+
 
 
 if __name__ == '__main__':
